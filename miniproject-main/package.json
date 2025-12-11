@@ -1,0 +1,27 @@
+{
+  "name": "miniproject",
+  "version": "1.0.0",
+  "description": "2025.12.02",
+  "homepage": "https://github.com/ArLyehee/project#readme",
+  "bugs": {
+    "url": "https://github.com/ArLyehee/project/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ArLyehee/project.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "mariadb": "^3.4.5",
+    "nodemon": "^3.1.11"
+  }
+}

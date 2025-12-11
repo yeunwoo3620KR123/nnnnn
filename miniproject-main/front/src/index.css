@@ -1,0 +1,44 @@
+.main {
+    position: relative;
+    width: 100%;
+    height: 30px;
+}
+.main>ul {
+    position: absolute;
+    top: 0;
+    right: 0;
+    list-style: none;
+    display: flex;
+}
+.main>ul>li {
+    padding: 0 5px 0 10px;
+}
+.main>ul>li>a {
+    color: inherit;
+    text-decoration: none;
+}
+#Header {
+    width: 1020px;
+    margin: 0 auto;
+}
+.logo {
+    text-align: center;
+}
+.menubox{
+    border: 1px solid black;
+    display: flex;
+    justify-content: space-around;
+}
+.menubox>ul {
+    list-style: none;
+}
+.menubox>ul>li a {
+    color: inherit;
+    text-decoration: none;
+}
+.product-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
