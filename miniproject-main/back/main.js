@@ -132,7 +132,6 @@
 // module.exports = router;
 
 
-
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
@@ -155,23 +154,22 @@ const upload = multer({ storage });
 // ---------------- 상품 조회 ----------------
 router.get("/dbprod", async (req, res) => {
   try {
-    const result = await pool.query(
+    const [rows] = await pool.query(
       "SELECT pId, pName, brand, pPrice, description, pcategory, image, stock FROM products"
     );
 
-    const rows = Array.isArray(result[0]) ? result[0] : result;
-    console.log("rows:", rows, Array.isArray(rows));
-
-    const products = rows.map((row) => ({
-      id: row.pId,
-      name: row.pName,
-      brand: row.brand,
-      price: row.pPrice,
-      description: row.description,
-      category: row.pcategory,
-      image: row.image ? `http://localhost:8080${row.image}` : null,
-      stock: row.stock,
-    }));
+    const products = Array.isArray(rows)
+      ? rows.map(row => ({
+          id: row.pId,
+          name: row.pName,
+          brand: row.brand,
+          price: row.pPrice,
+          description: row.description,
+          category: row.pcategory,
+          image: row.image ? `http://localhost:8080${row.image}` : null,
+          stock: row.stock
+        }))
+      : [];
 
     res.json(products);
   } catch (err) {
@@ -183,7 +181,6 @@ router.get("/dbprod", async (req, res) => {
 // ---------------- 상품 수정 ----------------
 router.put("/dbprod", upload.single("image"), async (req, res) => {
   const { pId, pName, brand, pPrice, description, pcategory, stock } = req.body;
-
   if (!pId) return res.status(400).json({ success: false, message: "pId가 필요합니다." });
 
   try {
@@ -200,9 +197,89 @@ router.put("/dbprod", upload.single("image"), async (req, res) => {
 
     await pool.query(sql, params);
 
-    res.json({ success: true, message: "상품 수정 완료" });
+    const [[updatedRow]] = await pool.query(
+      "SELECT pId, pName, brand, pPrice, description, pcategory, image, stock FROM products WHERE pId=?",
+      [pId]
+    );
+
+    const updatedProduct = {
+      id: updatedRow.pId,
+      name: updatedRow.pName,
+      brand: updatedRow.brand,
+      price: updatedRow.pPrice,
+      description: updatedRow.description,
+      category: updatedRow.pcategory,
+      image: updatedRow.image ? `http://localhost:8080${updatedRow.image}` : null,
+      stock: updatedRow.stock
+    };
+
+    res.json({ success: true, message: "상품 수정 완료", product: updatedProduct });
   } catch (err) {
     console.error("DB 에러:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// ---------------- 검색 ----------------
+router.get("/search", async (req, res) => {
+  const { keyword } = req.query;
+  if (!keyword) return res.status(400).json({ success: false, message: "검색어 필요" });
+
+  try {
+    const [rows] = await pool.query(
+      "SELECT pId, pName, brand, pPrice, description, pcategory, image, stock FROM products WHERE pName LIKE ? OR pcategory LIKE ?",
+      [`%${keyword}%`, `%${keyword}%`]
+    );
+
+    const products = Array.isArray(rows)
+      ? rows.map(row => ({
+          id: row.pId,
+          name: row.pName,
+          brand: row.brand,
+          price: row.pPrice,
+          description: row.description,
+          category: row.pcategory,
+          image: row.image ? `http://localhost:8080${row.image}` : null,
+          stock: row.stock
+        }))
+      : [];
+
+    res.json(products);
+  } catch (err) {
+    console.error("검색 에러:", err);
+    res.status(500).json({ success: false, message: "검색 실패" });
+  }
+});
+
+// ---------------- 상품 등록 ----------------
+router.post('/addmain', upload.single('image'), async (req, res) => {
+  // 관리자 체크
+  if (!req.session.user || req.session.user.admin !== 1) {
+      return res.status(403).json({ success: false, message: "관리자만 접근 가능합니다" });
+  }
+
+  const pId = 'p' + Date.now();
+  const { pName, pPrice, brand, description, pcategory, stock } = req.body;
+
+  if (!pName || !pPrice) {
+      return res.status(400).json({ success: false, message: "상품명과 가격은 필수입니다" });
+  }
+
+  try {
+    const price = parseInt(pPrice);
+    const stockNum = parseInt(stock) || 0;
+
+    let imgPath = null;
+    if (req.file) imgPath = '/uploads/' + req.file.filename;
+
+    await pool.query(
+      'INSERT INTO products(pId, pName, brand, pPrice, description, pcategory, stock, image) VALUES(?,?,?,?,?,?,?,?)',
+      [pId, pName, brand, price, description || '', pcategory || '', stockNum, imgPath]
+    );
+
+    res.json({ success: true, message: "상품등록 완료", pId });
+  } catch (err) {
+    console.error("상품 등록 에러:", err);
     res.status(500).json({ success: false, message: err.message });
   }
 });

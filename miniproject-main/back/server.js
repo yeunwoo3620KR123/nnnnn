@@ -51,7 +51,6 @@
 // })
 
 
-
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -100,5 +99,3 @@ app.get('/', (req, res) => {
 app.listen(8080, () => {
   console.log('potato server running on port 8080');
 });
-
-
