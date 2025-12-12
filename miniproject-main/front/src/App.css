@@ -149,6 +149,16 @@ ul {
   margin-top: 5px;
 }
 
+.card2{
+  background-color: white;
+  border-radius: 12px;       
+  overflow: hidden;          
+  border: 1px solid #eee;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  padding: 5px;
+}
+
 /* =========================================
    6. 버튼 & 입력창 (Components)
    ========================================= */

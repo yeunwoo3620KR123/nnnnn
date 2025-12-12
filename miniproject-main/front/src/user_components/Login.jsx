@@ -14,7 +14,7 @@ function Login() {
     const success = await login(id, pw);
 
     if (success) {
-        navigate('/mypage'); // 로그인 성공 시 메인페이지로 이동
+        navigate('/'); // 로그인 성공 시 메인페이지로 이동
     } else {
         alert("아이디 또는 비밀번호가 일치하지 않습니다");
     }
