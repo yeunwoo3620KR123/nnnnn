@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from '../context/AuthContext';
 
-function Addproduct() {
+function Addproduct( {onProductAdded} ) {
     const navigate = useNavigate();
     const [pName, setpName] = useState("")
     const [brand, setBrand] = useState("")
@@ -10,36 +11,68 @@ function Addproduct() {
     const [pcategory, setCategory] = useState("")
     const [stock, setStock] = useState("")
     const [image, setImage] = useState(null);
+    const { user } = useContext(AuthContext);
 
-    function saveProduct() {
-        if (!pName.trim() || !pPrice.trim()) { alert("상품명, 가격은 필수 입력입니다"); return; }
-        if (brand && brand.trim().length === 0) { alert("브랜드 명을 입력해주세요"); return; }
-        if (isNaN(pPrice.trim())) { alert ("가격은 숫자로 입력해주세요"); return; }
-        if (description && description.trim().length === 0) { alert ("상품 설명을 입력해주세요"); return; }
-        if (pcategory && pcategory.trim().length === 0) { alert ("카테고리를 입력해주세요"); return; }
-        if (stock && isNaN(stock.trim())) { alert ("재고는 숫자로 입력해주세요"); return; }
+    async function saveProduct() {
+        if (!pName.trim() || !pPrice.trim()) { 
+            alert("상품명, 가격은 필수 입력입니다"); 
+            return; 
+        }
+        if (brand && brand.trim().length === 0) { 
+            alert("브랜드 명을 입력해주세요"); 
+            return; 
+        }
+        if (isNaN(pPrice.trim())) { 
+            alert("가격은 숫자로 입력해주세요"); 
+            return; 
+        }
+        if (description && description.trim().length === 0) { 
+            alert("상품 설명을 입력해주세요"); 
+            return; 
+        }
+        if (pcategory && pcategory.trim().length === 0) { 
+            alert("카테고리를 입력해주세요"); 
+            return; 
+        }
+        if (stock && isNaN(stock.trim())) { 
+            alert("재고는 숫자로 입력해주세요"); 
+            return; 
+        }
 
         const formData = new FormData();
-            formData.append("pName", pName.trim());
-            formData.append("brand", brand.trim() || "");
-            formData.append("pPrice", pPrice.trim());
-            formData.append("description", description.trim() || "");
-            formData.append("pcategory", pcategory.trim() || "");
-            formData.append("stock", stock.trim() || 0);
-        if(image){ formData.append("image", image); }
-
-        fetch("http://localhost:8080/main/addmain", {
-            method: "POST",
-            credentials: 'include',
-            body: formData,
-        })
-            .then(res => res.json())
-            .then(data => {
+        formData.append("pName", pName.trim());
+        formData.append("brand", brand.trim() || "");
+        formData.append("pPrice", pPrice.trim());
+        formData.append("description", description.trim() || "");
+        formData.append("pcategory", pcategory.trim() || "");
+        formData.append("stock", stock.trim() || 0);
+        if(image){ 
+            formData.append("image", image); 
+        }
+        try {
+            const response = await fetch("http://localhost:8080/main/addmain", {
+                method: "POST",
+                credentials: 'include',
+                body: formData,
+            });
+            
+            const data = await response.json();
+            console.log("상품등록", data);
+            
+            if (data.message === "상품등록 완료" || data.result) {
                 alert("상품 등록 성공!");
-                console.log("상품등록", data);
+                
+                if (onProductAdded) {
+                    await onProductAdded();
+                }
                 navigate('/');
-            })
-            .catch(err => console.error("상품등록 에러:", err));
+            } else {
+                alert(data.message || "상품 등록 실패");
+            }
+        } catch (err) {
+            console.error("상품등록 에러:", err);
+            alert("상품 등록 중 오류가 발생했습니다.");
+        }
     }
 
     return (

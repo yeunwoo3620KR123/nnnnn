@@ -9,10 +9,10 @@ router.get('/:userId', async(req, res)=>{
         const rows = await pool.query(
             `SELECT 
                 c.pId as id, 
-                c.pName as name, 
-                c.pPrice as price,
+                p.pName as name, 
+                p.pPrice as price,
                 c.amount as amount,
-                c.img as image,
+                p.image,
                 p.stock as stock
             FROM cart c
             LEFT JOIN products p ON c.pId = p.pId
