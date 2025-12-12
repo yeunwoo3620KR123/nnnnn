@@ -141,14 +141,13 @@ function Cart() {
           </div>
 
           <ul style={{padding:0}}>
-            
             {items.map((item)=>(
               <li key={item.id} style={{display:'flex', gap:'20px', padding:'20px', borderBottom:'1px solid #eee', alignItems:'center'}}>
                 <div style={{display:'flex', alignItems:'center', gap:'15px'}}>
                   <input type="checkbox" 
                     checked={checkItem.includes(item.id)} 
                     onChange={() => checkProduct(item.id)}/>
-                  <img src={item.image} alt={item.name}
+                  <img src={`http://localhost:8080${item.image}`} alt={item.name}
                   style={{
                   width: '100px',
                   height: '100px',

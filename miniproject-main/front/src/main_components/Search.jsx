@@ -40,7 +40,7 @@ function Search() {
                 {result.map(item => (
                     <div key={item.pId} className="card">
                         <img 
-                            src={item.img}
+                            src={item.image}
                             alt={item.pName} 
                             className="card-img"
                         />

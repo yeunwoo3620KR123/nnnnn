@@ -16,9 +16,9 @@ import EditUser from './user_components/EditUser'
 import DeleteUser from './user_components/DeleteUser'
 import MyPage from './user_components/MyPage.jsx'
 import AuthProvider from './context/AuthContext.jsx';
-import AdminOrders from './cart_components/AdminOrders';
-import MyOrders from './cart_components/MyOrders';
-
+import EditProuct from './main_components/EditProduct.jsx';
+import MyOrders from './cart_components/MyOrders.jsx';
+import AdminOrders from './cart_components/AdminOrder.jsx';
 
 import './App.css';
 
@@ -123,6 +123,16 @@ const handleAddReview = async (productId, rating, content) => {
   }
 };
 
+const handleProductAdded = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/pro/products');
+      const data = await response.json();
+      setProducts(data);
+    } catch (error) {
+      console.error("상품 로딩 실패:", error);
+    }
+  };
+
   useEffect(() => {
     async function fetchProducts() {
       try {
@@ -151,7 +161,6 @@ const handleAddReview = async (productId, rating, content) => {
 
   return (
     <AuthProvider>
-      {console.log(products)}
     <BrowserRouter>
       <Header
         isLoggedIn={isLoggedIn}
@@ -172,7 +181,7 @@ const handleAddReview = async (productId, rating, content) => {
           <Route path="/order" element={<Order />} />
           <Route path="/done" element={<Done />} />
           <Route path="/search" element={<Search />} />
-          <Route path="/addproduct" element={<Addproduct />} />
+          <Route path="/addproduct" element={<Addproduct onProductAdded={handleProductAdded} />} />
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
           <Route path="/regist" element={<Regist />} />
           <Route path="/mypage" element={<MyPage />} />
@@ -180,14 +189,9 @@ const handleAddReview = async (productId, rating, content) => {
           <Route path="/settings/edit" element={<EditUser />} />
           <Route path="/settings/delete" element={<DeleteUser />} />
           <Route path='/admin' element={<AdminPage />} />
-           {/* 관리자 전용 주문 내역 */}
-            <Route path="/admin/orders" element={<AdminOrders />} />
-
-            {/* 회원 전용 주문 내역 */}
-            <Route path="/myorders" element={<MyOrders />} />
-
-
-
+          <Route path='/editproduct' element={<EditProuct/>}/>
+          <Route path='/adminorder' element={<AdminOrders/>}/>
+          <Route path='/myorders' element={<MyOrders/>}/>
         </Routes>
       </div>
     </BrowserRouter>

@@ -38,8 +38,8 @@ function EditUser() {
     const data = await res.json();
         if (data.result) {
             alert("회원 정보 수정 완료. 다시 로그인 해주세요.");
-            await logout();                 // ✅ 여기서 로그아웃
-            window.location.href = "/login"; // ✅ 로그인 페이지로 이동
+            await logout();                 
+            window.location.href = "/login";
         } else {
             alert("수정 실패");
         }    
@@ -87,10 +87,5 @@ function EditUser() {
 
 
 );
-
-
-    
-    
-
 }
     export default EditUser

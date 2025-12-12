@@ -63,7 +63,7 @@ function MainPage() {
                         </div>
 
                         {/* 관리자용 주문 조회 버튼 */}
-                        <div className="card" style={{ padding: '30px', cursor: 'pointer' }} onClick={() => navigate('/admin/orders')}>
+                        <div className="card" style={{ padding: '30px', cursor: 'pointer' }} onClick={() => navigate('/adminorder')}>
                             <h3>📦 주문 조회 (관리자)</h3>
                             <p style={{ color: '#888' }}>모든 주문 내역 확인</p>
                         </div>

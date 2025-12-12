@@ -116,7 +116,6 @@ function ProductDetail({ products, reviews, onAddReview,onAddToCart}) {
         
         if (data.result) {
             alert('장바구니에 담겼습니다.');
-            console.log(product.image)
             const goToCart = window.confirm('장바구니로 이동하시겠습니까?');
             if (goToCart) {
                 navigate('/cart');
@@ -135,52 +134,53 @@ const buyNow = async () => {
       alert('로그인이 필요합니다.');
       navigate('/login');
       return;
-    }
-    try {
-        const response = await fetch('http://localhost:8080/pro/buynow', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include',
-            body: JSON.stringify({
-                pId: product.id,
-                id: userId,
-                amount: quantity,
-                img: product.image,
-                pName: product.name,
-                pPrice: product.price
-            })
-        });
-        
-        const data = await response.json();
+  }
+  
+  try {
+      const response = await fetch('http://localhost:8080/pro/buynow', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+              pId: product.id,
+              id: userId,
+              amount: quantity,
+              pName: product.name,
+              pPrice: product.price
+          })
+      });
+      
+      const data = await response.json();
 
-        if (!response.ok) {
-            alert('장바구니 추가 실패');
-            return;
-        }
-        
-        if (data.result) {
-            alert('주문페이지로 넘어갑니다.');
-            navigate('/order', { 
-                state: { 
-                    selectedItems: [{
-                        id: product.id,
-                        pid: product.Pid,
-                        name: product.name,
-                        price: product.price,
-                        image: product.image,
-                        amount: quantity
-                    }]
-                }
-            });
-        } else {
-            alert(data.message || '장바구니 추가 실패');
-        }
-    } catch (error) {
-        console.error('장바구니 추가 오류:', error);
-        alert('장바구니 추가 실패');
-    }
+      if (!response.ok) {
+          alert('오류가 발생했습니다.');
+          return;
+      }
+      
+      if (data.result) {
+          const imagePath = product.image.replace('http://localhost:8080', '');
+          
+          navigate('/order', { 
+              state: { 
+                  selectedItems: [{
+                      id: product.id,
+                      name: product.name,
+                      price: product.price,
+                      image: imagePath,
+                      amount: quantity,
+                      stock: product.stock
+                  }]
+              }
+          });
+      } else {
+          alert(data.message || '오류가 발생했습니다.');
+      }
+  } catch (error) {
+      console.error('오류:', error);
+      alert('오류가 발생했습니다.');
+  }
 }
 
 const calculateAgeStats = (reviews) => {
