@@ -32,7 +32,7 @@ router.get('/search', async (req, res) => {
 
     const result = pp.map(item => ({
         ...item,
-        img: item.img ? `http://localhost:8080${item.img}` : null
+        image: item.image ? `http://localhost:8080${item.image}` : null
     }));
     
     res.send(result);
@@ -66,7 +66,7 @@ router.post('/addmain', upload.single('image'), async(req,res)=> {
         }
 
     await pool.query(
-        'INSERT INTO products(pId, pName, brand,pPrice,description,pcategory,stock,img) VALUES(?,?,?,?,?,?,?,?)',
+        'INSERT INTO products(pId, pName, brand,pPrice,description,pcategory,stock,image) VALUES(?,?,?,?,?,?,?,?)',
         [pId, pName, brand, price, description || '',pcategory || '', stockNum, imgPath]
     );
 
@@ -75,6 +75,46 @@ router.post('/addmain', upload.single('image'), async(req,res)=> {
     console.error("상품 등록 에러:", err);
     res.status(500).json({message:"서버 에러", error: err.message});
 }
+});
+
+router.get('/dbprod', async (req, res) => {
+    try {
+        const rows = await pool.query("SELECT pId, pName, pPrice, description, pcategory, image, stock FROM products");
+        const products = rows.map(row => ({
+        id: row.pId,
+        name: row.pName,
+        price: row.pPrice,
+        description: row.description,
+        category: row.pcategory,
+        image: `http://localhost:8080${row.image}`,
+        stock: row.stock
+        }));
+        res.json(products);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json([]);
+    }
+    });
+
+router.put('/dbprod', async(req, res) => {
+    const { pId, stock } = req.body;
+    
+
+    if (pId === undefined) {
+        return res.status(400).json({ success: false, error: "pId is missing" });
+    }
+
+    try {
+        await pool.query(
+            'UPDATE products SET stock=? WHERE pId=?',
+            [Number(stock) || 0, pId] 
+        );
+
+        res.json({ success: true, message: "재고 수정 완료" });
+    } catch(err) {
+        console.error("DB 에러:", err);
+        res.status(500).json({ success: false, error: err.message });
+    }
 });
 
 //상품db

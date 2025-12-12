@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
@@ -7,9 +7,11 @@ function AdminPage () {
     const { user, isLogin } = useContext(AuthContext);
     const navigate = useNavigate ();
 
-
-        function productclick() {
+    function productclick() {
         navigate('/addproduct')
+    }
+    function editProduct(){
+        navigate('/editproduct')
     }
 
 
@@ -30,8 +32,8 @@ function AdminPage () {
 
         <h1>관리자 전용 페이지입니다</h1>
 
-        <button className="btn" onClick={productclick}>상품등록창으로 이동</button>
-        
+        <button className="btn" onClick={productclick}>상품 등록창으로 이동</button>
+        <button className="btn" onClick={editProduct}>재고 수정창으로 이동</button>
         </div>
 
 
